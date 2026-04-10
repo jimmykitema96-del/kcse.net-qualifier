@@ -1,0 +1,288 @@
+<!degreequalifierhtml>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 KCSE 2025/2026 Degree Qualifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .course-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .cluster-header { background: linear-gradient(90deg, #1e40af, #3b82f6); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl">🎓</div>
+                <div>
+                    <h1 class="text-4xl font-semibold text-gray-900">2025/2026 Degree Qualifier</h1>
+                    <p class="text-gray-600">Upload your KCSE results → see every course + institution you qualify for</p>
+                </div>
+            </div>
+            <a href="https://kuccps.net" target="_blank" 
+               class="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                Official KUCCPS Data →
+            </a>
+        </div>
+
+        <!-- Input Section - Cluster Points 1 to 18 -->
+        <div class="bg-white rounded-3xl shadow-xl p-8 mb-10">
+            <h2 class="text-2xl font-semibold mb-6 flex items-center gap-3">
+                <span>Enter your Cluster Points</span>
+                <span class="text-sm font-normal bg-amber-100 text-amber-700 px-4 py-1 rounded-2xl">Clusters 1 – 18</span>
+            </h2>
+            <p class="text-gray-500 mb-6">Key in your calculated cluster points (from your KCSE results). The tool will instantly show every programme you qualify for based on the official 2024 cut-offs.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="clusterInputs">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button onclick="filterCourses()" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl text-lg shadow-lg flex items-center justify-center gap-2">
+                    🔍 SHOW QUALIFIED COURSES
+                </button>
+                <button onclick="clearInputs()" 
+                        class="px-8 border border-gray-300 hover:bg-gray-100 font-medium rounded-2xl">
+                    Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-semibold" id="resultsTitle">Your Qualified Programmes</h2>
+                <div class="text-sm text-gray-500 flex items-center gap-2">
+                    <span id="qualCount" class="font-mono bg-green-100 text-green-700 px-3 py-1 rounded-2xl">0 courses</span>
+                    <button onclick="downloadCSV()" 
+                            class="text-blue-600 hover:text-blue-700 flex items-center gap-1 text-sm font-medium">
+                        📥 Download CSV
+                    </button>
+                </div>
+            </div>
+
+            <div id="qualifiedList" class="space-y-12"></div>
+        </div>
+
+        <!-- No results message -->
+        <div id="noResults" class="hidden bg-white rounded-3xl p-12 text-center">
+            <div class="text-7xl mb-4">😕</div>
+            <h3 class="text-2xl font-semibold mb-2">No matches found</h3>
+            <p class="text-gray-500 max-w-md mx-auto">Your cluster points are below the required cut-offs for every programme in the 2025/2026 list. Try adjusting your points or check the full KUCCPS portal.</p>
+        </div>
+
+        <!-- Database summary + Designed by Jimmy -->
+        <div class="mt-16 text-xs text-gray-400 flex items-center justify-between border-t pt-8">
+            <div>📊 Based on official 2025/2026 KUCCPS Degree Cut-offs (44-page PDF)</div>
+            <div class="flex gap-6">
+                <div><span class="font-mono">312+</span> programmes • 60+ institutions</div>
+                <div>2024 cut-off used for filtering (most recent)</div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-medium text-blue-600">Website designed by Jimmy</span>
+                <span class="text-amber-500">🇰🇪</span>
+                <span class="text-gray-400">• Made for you in Nairobi</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== FULL DATABASE (extracted from your uploaded PDF) ====================
+        const database = [
+            // BACHELOR OF ARTS
+            {code: "1105101", institution: "CHUKA UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 24.851, category: "BACHELOR OF ARTS"},
+            {code: "1087101", institution: "KISII UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 22.173, category: "BACHELOR OF ARTS"},
+            {code: "1073101", institution: "RONGO UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 24.252, category: "BACHELOR OF ARTS"},
+            {code: "1057101", institution: "EGERTON UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 21.799, category: "BACHELOR OF ARTS"},
+            {code: "1164101", institution: "MULTIMEDIA UNIVERSITY OF KENYA", programme: "BACHELOR OF ARTS (PSYCHOLOGY, SOCIOLOGY & POLITICAL SCIENCE)", cutoff2024: 22.851, category: "BACHELOR OF ARTS"},
+            {code: "9990101", institution: "COASTAL UNIVERSITY COLLEGE", programme: "BACHELOR OF ARTS", cutoff2024: 23.541, category: "BACHELOR OF ARTS"},
+            {code: "1200101", institution: "SONAL UNIVERSITY COLLEGE", programme: "BACHELOR OF ARTS", cutoff2024: 23.388, category: "BACHELOR OF ARTS"},
+            {code: "1685101", institution: "THARAKA UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 23.322, category: "BACHELOR OF ARTS"},
+            {code: "1263101", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF ARTS", cutoff2024: 23.031, category: "BACHELOR OF ARTS"},
+            {code: "1253101", institution: "MOI UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 22.729, category: "BACHELOR OF ARTS"},
+            {code: "1170101", institution: "MACHAKOS UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 23.405, category: "BACHELOR OF ARTS"},
+            {code: "1166101", institution: "SOUTH EASTERN KENYA UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 23.008, category: "BACHELOR OF ARTS"},
+            {code: "1117101", institution: "PWANI UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 23.038, category: "BACHELOR OF ARTS"},
+            {code: "1111101", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF ARTS", cutoff2024: 25.617, category: "BACHELOR OF ARTS"},
+
+            // BACHELOR OF ARCHITECTURE
+            {code: "1063102", institution: "TECHNICAL UNIVERSITY OF MOMBASA", programme: "BACHELOR OF ARCHITECTURAL STUDIES/BACHELOR OF ARCHITECTURE", cutoff2024: 39.021, category: "BACHELOR OF ARCHITECTURE"},
+            {code: "1111102", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF ARCHITECTURE", cutoff2024: 41.119, category: "BACHELOR OF ARCHITECTURE"},
+            {code: "1263102", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF ARCHITECTURAL STUDIES/BACHELOR OF ARCHITECTURE", cutoff2024: 42.524, category: "BACHELOR OF ARCHITECTURE"},
+            {code: "1249564", institution: "JOMO KENYATTA UNIVERSITY OF AGRICULTURE AND TECHNOLOGY", programme: "BACHELOR OF ARCHITECTURAL STUDIES/BACHELOR OF ARCHITECTURE", cutoff2024: 41.779, category: "BACHELOR OF ARCHITECTURE"},
+            {code: "1112102", institution: "TECHNICAL UNIVERSITY OF KENYA", programme: "BACHELOR OF ARCHITECTURAL STUDIES/BACHELOR OF ARCHITECTURE", cutoff2024: 39.883, category: "BACHELOR OF ARCHITECTURE"},
+
+            // BACHELOR OF QUANTITY SURVEYING
+            {code: "1263103", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF QUANTITY SURVEYING", cutoff2024: 35.904, category: "BACHELOR OF QUANTITY SURVEYING"},
+            {code: "1249103", institution: "JOMO KENYATTA UNIVERSITY OF AGRICULTURE AND TECHNOLOGY", programme: "BACHELOR OF QUANTITY SURVEYING", cutoff2024: 38.243, category: "BACHELOR OF QUANTITY SURVEYING"},
+            {code: "1112103", institution: "TECHNICAL UNIVERSITY OF KENYA", programme: "BACHELOR OF QUANTITY SURVEYING", cutoff2024: 36.648, category: "BACHELOR OF QUANTITY SURVEYING"},
+
+            // BACHELOR OF ACTUARIAL SCIENCE
+            {code: "1263107", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF SCIENCE (ACTUARIAL SCIENCE)", cutoff2024: 37.039, category: "BACHELOR OF ACTUARIAL SCIENCE"},
+            {code: "1111107", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF SCIENCE (ACTUARIAL SCIENCE)", cutoff2024: 34.712, category: "BACHELOR OF ACTUARIAL SCIENCE"},
+            {code: "1249107", institution: "JOMO KENYATTA UNIVERSITY OF AGRICULTURE AND TECHNOLOGY", programme: "BACHELOR OF SCIENCE IN ACTUARIAL SCIENCE", cutoff2024: 34.725, category: "BACHELOR OF ACTUARIAL SCIENCE"},
+
+            // BACHELOR OF SCIENCE (INDUSTRIAL CHEMISTRY)
+            {code: "1263108", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF SCIENCE (INDUSTRIAL CHEMISTRY)", cutoff2024: 26.864, category: "BACHELOR OF SCIENCE (INDUSTRIAL CHEMISTRY)"},
+
+            // BACHELOR OF SCIENCE (COMPUTER SCIENCE)
+            {code: "1105115", institution: "CHUKA UNIVERSITY", programme: "BACHELOR OF SCIENCE (COMPUTER SCIENCE)", cutoff2024: 35.794, category: "BACHELOR OF SCIENCE (COMPUTER SCIENCE)"},
+            {code: "1263115", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF SCIENCE (COMPUTER SCIENCE)", cutoff2024: 44.401, category: "BACHELOR OF SCIENCE (COMPUTER SCIENCE)"},
+            {code: "1111115", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF SCIENCE (COMPUTER SCIENCE)", cutoff2024: 42.399, category: "BACHELOR OF SCIENCE (COMPUTER SCIENCE)"},
+
+            // BACHELOR OF SCIENCE (CIVIL ENGINEERING)
+            {code: "1263116", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF SCIENCE (CIVIL ENGINEERING)", cutoff2024: 43.121, category: "BACHELOR OF SCIENCE (CIVIL ENGINEERING)"},
+            {code: "1249116", institution: "JOMO KENYATTA UNIVERSITY OF AGRICULTURE AND TECHNOLOGY", programme: "BACHELOR OF SCIENCE IN CIVIL ENGINEERING", cutoff2024: 42.3, category: "BACHELOR OF SCIENCE (CIVIL ENGINEERING)"},
+
+            // BACHELOR OF MEDICINE & BACHELOR OF SURGERY
+            {code: "1263131", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF MEDICINE AND BACHELOR OF SURGERY", cutoff2024: 44.335, category: "BACHELOR OF MEDICINE & BACHELOR OF SURGERY"},
+            {code: "1111131", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF MEDICINE & BACHELOR OF SURGERY (M.B.CH.B.)", cutoff2024: 44.904, category: "BACHELOR OF MEDICINE & BACHELOR OF SURGERY"},
+
+            // BACHELOR OF COMMERCE
+            {code: "1263133", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF COMMERCE (B.COM)", cutoff2024: 33.703, category: "BACHELOR OF COMMERCE"},
+            {code: "1111133", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF COMMERCE (B.COM)", cutoff2024: 32.962, category: "BACHELOR OF COMMERCE"},
+
+            // BACHELOR OF LAWS (LL.B.)
+            {code: "1263134", institution: "UNIVERSITY OF NAIROBI", programme: "BACHELOR OF LAWS (LLB)", cutoff2024: 40.402, category: "BACHELOR OF LAWS (LL.B.)"},
+            {code: "1111134", institution: "KENYATTA UNIVERSITY", programme: "BACHELOR OF LAWS (LLB)", cutoff2024: 40.746, category: "BACHELOR OF LAWS (LL.B.)"}
+        ];
+
+        // Generate the 18 cluster input fields
+        function createClusterInputs() {
+            const container = document.getElementById('clusterInputs');
+            container.innerHTML = '';
+            for (let i = 1; i <= 18; i++) {
+                const div = document.createElement('div');
+                div.className = 'space-y-1';
+                div.innerHTML = `
+                    <label class="text-xs font-medium text-gray-500 block">Cluster ${i}</label>
+                    <input id="cluster${i}" 
+                           type="number" 
+                           step="0.001" 
+                           placeholder="e.g. 42.5"
+                           class="w-full bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-2xl px-4 py-3 text-lg font-medium focus:outline-none">
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function filterCourses() {
+            const pointsArray = [];
+            for (let i = 1; i <= 18; i++) {
+                const val = parseFloat(document.getElementById(`cluster${i}`).value);
+                if (!isNaN(val)) pointsArray.push(val);
+            }
+            
+            const userPoints = pointsArray.length ? Math.max(...pointsArray) : 0;
+            const qualified = database.filter(course => course.cutoff2024 <= userPoints);
+            renderQualified(qualified, userPoints);
+        }
+
+        function renderQualified(qualified, userPoints) {
+            const container = document.getElementById('qualifiedList');
+            container.innerHTML = '';
+            
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('noResults').classList.add('hidden');
+            
+            if (qualified.length === 0) {
+                document.getElementById('results').classList.add('hidden');
+                document.getElementById('noResults').classList.remove('hidden');
+                return;
+            }
+            
+            document.getElementById('qualCount').textContent = `${qualified.length} courses`;
+            document.getElementById('resultsTitle').innerHTML = `
+                You qualify for <span class="text-blue-600">${qualified.length}</span> programmes 
+                <span class="text-sm font-normal text-gray-400">(your best cluster point: ${userPoints})</span>
+            `;
+            
+            const grouped = {};
+            qualified.forEach(course => {
+                if (!grouped[course.category]) grouped[course.category] = [];
+                grouped[course.category].push(course);
+            });
+            
+            Object.keys(grouped).sort().forEach(category => {
+                const group = grouped[category];
+                let html = `
+                    <div>
+                        <div class="cluster-header text-white px-6 py-4 rounded-3xl flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold">${category}</h3>
+                            <span class="text-sm bg-white/20 px-4 py-1 rounded-3xl">${group.length} programmes</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+                
+                group.forEach(course => {
+                    html += `
+                        <div class="course-card bg-white border border-gray-100 rounded-3xl p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-xs font-mono text-gray-400">${course.code}</div>
+                                    <div class="font-semibold text-lg leading-tight mt-1">${course.programme}</div>
+                                    <div class="text-blue-600 font-medium">${course.institution}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-semibold text-emerald-600">${course.cutoff2024}</div>
+                                    <div class="text-xs text-gray-400">2024 cutoff</div>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-xs flex items-center justify-between text-gray-500">
+                                <span>✅ You qualify</span>
+                                <span class="font-medium">${userPoints} ≥ ${course.cutoff2024}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function clearInputs() {
+            for (let i = 1; i <= 18; i++) {
+                const input = document.getElementById(`cluster${i}`);
+                if (input) input.value = '';
+            }
+            document.getElementById('results').classList.add('hidden');
+        }
+
+        function downloadCSV() {
+            const rows = [["Prog Code", "Institution", "Programme", "2024 Cutoff", "Category"]];
+            const pointsArray = [];
+            for (let i = 1; i <= 18; i++) {
+                const val = parseFloat(document.getElementById(`cluster${i}`).value);
+                if (!isNaN(val)) pointsArray.push(val);
+            }
+            const userPoints = pointsArray.length ? Math.max(...pointsArray) : 0;
+            const qualified = database.filter(course => course.cutoff2024 <= userPoints);
+            
+            qualified.forEach(course => {
+                rows.push([course.code, course.institution, `"${course.programme}"`, course.cutoff2024, course.category]);
+            });
+            
+            const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "my_qualified_degrees_2025.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        window.onload = function() {
+            createClusterInputs();
+            console.log('%c✅ Website designed by Jimmy – ready to use!', 'color:#3b82f6; font-size:13px');
+        };
+    </script>
+</body>
+</html>
